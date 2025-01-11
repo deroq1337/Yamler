@@ -5,6 +5,7 @@ import net.cubespace.Yamler.Config.Converter.Converter;
 import net.cubespace.Yamler.Config.InternalConverter;
 import org.bukkit.*;
 import org.bukkit.Location;
+import org.bukkit.block.data.BlockData;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
@@ -26,7 +27,8 @@ public class Block implements Converter {
 
         Converter locationConverter = converter.getConverter(org.bukkit.Location.class);
         Map<String, Object> saveMap = new HashMap<>();
-        saveMap.put("id", block.getType() + ((block.getData() > 0) ? ":" + block.getData() : ""));
+        saveMap.put("type", block.getType().name());
+        saveMap.put("blockData", block.getBlockData().getAsString());
         saveMap.put("location", locationConverter.toConfig(org.bukkit.Location.class, block.getLocation(), null));
 
         return saveMap;
@@ -40,11 +42,11 @@ public class Block implements Converter {
         Location location = new org.bukkit.Location(Bukkit.getWorld((String) locationMap.get("world")), (Double) locationMap.get("x"), (Double) locationMap.get("y"), (Double) locationMap.get("z"));
         org.bukkit.block.Block block = location.getBlock();
 
-        String[] temp = ((String) blockMap.get("id")).split(":");
-        block.setType(Material.valueOf(temp[0]));
-
-        if (temp.length == 2) {
-            block.setData(Byte.valueOf(temp[1]));
+        block.setType(Material.valueOf((String) blockMap.get("type")));
+        String blockDataString = (String) blockMap.get("blockData");
+        if (blockDataString != null) {
+            BlockData blockData = Bukkit.createBlockData(blockDataString);
+            block.setBlockData(blockData);
         }
 
         return block;

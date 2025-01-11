@@ -47,8 +47,10 @@ public class Set implements Converter {
             Converter converter = internalConverter.getConverter((Class) genericType.getActualTypeArguments()[0]);
 
             if (converter != null) {
-                for ( int i = 0; i < values.size(); i++ ) {
-                    newList.add( converter.fromConfig( ( Class ) genericType.getActualTypeArguments()[0], values.get( i ), null ) );
+                if (values != null) {
+                    for ( int i = 0; i < values.size(); i++ ) {
+                        newList.add( converter.fromConfig( ( Class ) genericType.getActualTypeArguments()[0], values.get( i ), null ) );
+                    }
                 }
             } else {
                 newList.addAll( values );

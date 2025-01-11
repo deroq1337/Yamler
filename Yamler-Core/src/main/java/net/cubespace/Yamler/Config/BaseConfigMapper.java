@@ -1,6 +1,7 @@
 package net.cubespace.Yamler.Config;
 
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -24,7 +25,7 @@ public class BaseConfigMapper extends BaseConfig {
 	private transient Yaml yaml;
 	protected transient ConfigSection root;
 	private transient Map<String, ArrayList<String>> comments = new LinkedHashMap<>();
-	private transient Representer yamlRepresenter = new Representer();
+	private transient Representer yamlRepresenter = new Representer(new DumperOptions());
 
 	protected BaseConfigMapper() {
 		DumperOptions yamlOptions = new DumperOptions();
@@ -33,7 +34,10 @@ public class BaseConfigMapper extends BaseConfig {
 
 		yamlRepresenter.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
-		yaml = new Yaml(new CustomClassLoaderConstructor(BaseConfigMapper.class.getClassLoader()), yamlRepresenter, yamlOptions);
+		LoaderOptions options = new LoaderOptions();
+		options.setTagInspector(tag -> true);
+
+		yaml = new Yaml(new CustomClassLoaderConstructor(BaseConfigMapper.class.getClassLoader(), options), yamlRepresenter, yamlOptions);
 
         /*
         Configure the settings for serializing via the annotations present.

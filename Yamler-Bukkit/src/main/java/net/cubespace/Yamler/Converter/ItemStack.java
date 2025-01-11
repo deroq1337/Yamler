@@ -26,7 +26,7 @@ public class ItemStack implements Converter {
         org.bukkit.inventory.ItemStack itemStack = (org.bukkit.inventory.ItemStack) obj;
 
         Map<String, Object> saveMap = new HashMap<>();
-        saveMap.put("id", itemStack.getType() + ((itemStack.getDurability() > 0) ? ":" + itemStack.getDurability() : ""));
+        saveMap.put("type", itemStack.getType());
         saveMap.put("amount", itemStack.getAmount());
 
         Converter listConverter = converter.getConverter(List.class);
@@ -57,14 +57,10 @@ public class ItemStack implements Converter {
                 metaMap = ((ConfigSection) itemstackMap.get("meta")).getRawMap();
         }
 
-        String[] temp = ((String) itemstackMap.get("id")).split(":");
+        Material itemType = (Material) itemstackMap.get("type");
         org.bukkit.inventory.ItemStack itemStack = (org.bukkit.inventory.ItemStack)
-                type.getConstructor(Material.class).newInstance(Material.valueOf(temp[0]));
+                type.getConstructor(Material.class).newInstance(itemType);
         itemStack.setAmount((int) itemstackMap.get("amount"));
-
-        if(temp.length == 2) {
-            itemStack.setDurability(Short.valueOf(temp[1]));
-        }
 
         if(metaMap != null) {
             ItemMeta itemMeta = itemStack.getItemMeta();
